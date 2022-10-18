@@ -38,6 +38,9 @@ export const GlobalStoreActionType = {
     DROP: "DROP",
     REMOVE_SONG_WITH_INDEX: "REMOVE_SONG_WITH_INDEX",
     ADD_SONG_WITH_WITH_INDEX: "ADD_SONG_WITH_WITH_INDEX",
+    REMOVE_LIST_MODAL_OPEN_CHECKER: "REMOVE_LIST_MODAL_OPEN_CHECKER",
+    REMOVE_SONG_MODAL_OPEN_CHECKER: "REMOVE_SONG_MODAL_OPEN_CHECKER",
+    EDIT_SONG_MODAL_OPEN_CHECKER: "EDIT_SONG_MODAL_OPEN_CHECKER"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -239,6 +242,14 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     idNamePairs: store.idNamePairs,
                     newListCounter: store.newListCounter
+                })
+            }
+            case GlobalStoreActionType.REMOVE_LIST_MODAL_OPEN_CHECKER: {
+                return setStore({
+                    currentList: store.currentList,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter,
+                    removeListFlag: true
                 })
             }
             //END OF MY CASES
@@ -607,6 +618,14 @@ export const useGlobalStore = () => {
 
         let transaction = new EditSongTransaction(store, store.editSongID, newTitle, newArtist, newLink, store.currentList.songs[store.editSongID]);
         tps.addTransaction(transaction);
+    }
+
+    store.canUndo = function(){
+        return tps.hasTransactionToUndo();
+    }
+
+    store.canRedo = function (){
+        return tps.hasTransactionToRedo();
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
