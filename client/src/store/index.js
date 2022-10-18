@@ -116,7 +116,7 @@ export const useGlobalStore = () => {
         async function asyncChangeListName(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
-                let playlist = response.data.playist;
+                let playlist = response.data.playlist;
                 playlist.name = newName;
                 async function updateList(playlist) {
                     response = await api.updatePlaylistById(playlist._id, playlist);
@@ -197,11 +197,31 @@ export const useGlobalStore = () => {
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
-    store.setlistNameActive = function () {
+    store.setIsListNameEditActive = function () {
         storeReducer({
             type: GlobalStoreActionType.SET_LIST_NAME_EDIT_ACTIVE,
             payload: null
         });
+    }
+
+    //START OF MY OWN CODE
+    store.createNewList = function () {
+        let newName = "Untitled";
+        let playlist = {
+            name: newName,
+            songs: []
+        }
+        async function createPlaylist(newPlaylist) {
+            let response = await api.createList(newPlaylist);
+            if (response.data.success){
+                storeReducer({
+                    type: GlobalStoreActionType.CREATE_NEW_LIST,
+                    payload: newPlaylist
+                })
+            }
+            store.history.push('/playlist/' + response.data.playlist._id)
+        }
+        createPlaylist(playlist);
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
