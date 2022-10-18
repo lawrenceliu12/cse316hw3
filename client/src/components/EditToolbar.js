@@ -27,7 +27,7 @@ function EditToolbar() {
     //START OF MY CODE
     function handleAddSong(){
         if (store.currentList){
-            store.addSong();
+            store.addSongTransaction();
         }
     }
     //END OF MY CODE

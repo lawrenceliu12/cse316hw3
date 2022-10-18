@@ -1,6 +1,8 @@
 import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
+//TRANSACTIONS
+import AddSongTransaction from '../Transactions/AddSongTransaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -32,6 +34,7 @@ export const GlobalStoreActionType = {
     DRAG_START: "DRAG_START",
     DROP: "DROP",
     FINISH_DRAG: "FINISH_DRAG",
+    REMOVE_SONG_WITH_INDEX: "REMOVE_SONG_WITH_INDEX",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -222,6 +225,13 @@ export const useGlobalStore = () => {
                 })
             }
             case GlobalStoreActionType.FINISH_DRAG: {
+                return setStore({
+                    currentList: payload,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter
+                })
+            }
+            case GlobalStoreActionType.REMOVE_SONG_WITH_INDEX: {
                 return setStore({
                     currentList: payload,
                     idNamePairs: store.idNamePairs,
@@ -443,6 +453,27 @@ export const useGlobalStore = () => {
         removeSong(playlistID);
     }
 
+    store.deleteSongWithIndex = function (songID){
+        let playlistID = store.currentList._id;
+
+        async function removeSong(id, songID) {
+            let response = await api.getPlaylistById(id);
+            if (response.data.success && songID >= 0) {
+                response.data.playlist.songs.splice(songID, 1);
+                let playlist = response.data.playlist;
+                async function updateList(playlist) {
+                    response = await api.updatePlaylistById(playlist._id, playlist);
+                    storeReducer({
+                        type: GlobalStoreActionType.REMOVE_SONG_WITH_INDEX,
+                        payload: response.data.playlist
+                    })
+                }
+                updateList(playlist);
+            }
+        }
+        removeSong(playlistID, songID);
+    }
+
     store.setIsSongNameEditActive = function (id, song) {
         document.getElementById("edit-song-title-input").value = song.title;
         document.getElementById("edit-song-artist-input").value = song.artist;
@@ -529,6 +560,15 @@ export const useGlobalStore = () => {
             }
         }
         swapSongs(playlistID);
+    }
+
+    //START OF TRANSACTIONS
+    store.addSongTransaction = function (){
+        let addSongIndex = store.currentList.songs.length;
+        console.log(addSongIndex);
+
+        let transaction = new AddSongTransaction(store, addSongIndex);
+        tps.addTransaction(transaction);
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
