@@ -3,6 +3,7 @@ import jsTPS from '../common/jsTPS'
 import api from '../api'
 //TRANSACTIONS
 import AddSongTransaction from '../Transactions/AddSongTransaction';
+import MoveSongTransaction from '../Transactions/MoveSongTransaction'
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -33,7 +34,6 @@ export const GlobalStoreActionType = {
     OLD_EDIT_SONG: "OLD_EDIT_SONG",
     DRAG_START: "DRAG_START",
     DROP: "DROP",
-    FINISH_DRAG: "FINISH_DRAG",
     REMOVE_SONG_WITH_INDEX: "REMOVE_SONG_WITH_INDEX",
 }
 
@@ -222,13 +222,6 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     idNamePairs: store.idNamePairs,
                     newListCounter: store.newListCounter,
-                })
-            }
-            case GlobalStoreActionType.FINISH_DRAG: {
-                return setStore({
-                    currentList: payload,
-                    idNamePairs: store.idNamePairs,
-                    newListCounter: store.newListCounter
                 })
             }
             case GlobalStoreActionType.REMOVE_SONG_WITH_INDEX: {
@@ -534,25 +527,23 @@ export const useGlobalStore = () => {
         })
     }
 
-    store.handleDrop = function (index){
-        let draggedSongIndex = store.dragIndex
-        let draggedSong = store.currentList.songs[draggedSongIndex]
-        let dropSong = store.currentList.songs[index]
+    store.handleDrop = function (oldIndex, newIndex){
+        let draggedSong = store.currentList.songs[oldIndex]
+        let dropSong = store.currentList.songs[newIndex]
 
         let playlistID = store.currentList._id;
 
         let temp = dropSong;
-        store.currentList.songs[index] = draggedSong;
-        store.currentList.songs[draggedSongIndex] = temp;
+        store.currentList.songs[newIndex] = draggedSong;
+        store.currentList.songs[oldIndex] = temp;
 
         async function swapSongs(id){
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
-                let playlist = response.data.playlist;
                 async function updateList(playlist) {
                     response = await api.updatePlaylistById(playlist._id, playlist);
                     storeReducer({
-                        type: GlobalStoreActionType.FINISH_DRAG,
+                        type: GlobalStoreActionType.DROP,
                         payload: response.data.playlist
                     })
                 }
@@ -569,6 +560,13 @@ export const useGlobalStore = () => {
 
         let transaction = new AddSongTransaction(store, addSongIndex);
         tps.addTransaction(transaction);
+    }
+
+    store.moveSongTransaction = function(oldIndex, newIndex){
+        if (oldIndex !== newIndex){
+            let transaction = new MoveSongTransaction(store, oldIndex, newIndex);
+            tps.addTransaction(transaction);
+        }
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

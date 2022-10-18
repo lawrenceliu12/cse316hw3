@@ -39,8 +39,13 @@ function SongCard(props) {
         event.preventDefault();
     }
 
+    // function handleDragEnd(){
+    //     store.handleDragEnd(index);
+    // }
+
     function handleDrop(){
-        store.handleDrop(index);
+        store.moveSongTransaction(store.dragIndex, index);
+        // store.moveSongTransaction(index);
     }
     //END OF MY CODE
 
@@ -54,6 +59,7 @@ function SongCard(props) {
             draggable="true"
             onDragStart={handleDragStart}
             onDragOver = {handleDragOver}
+            // onDragEnd={handleDragEnd}
             onDrop={handleDrop}
         >
             {index + 1}.
