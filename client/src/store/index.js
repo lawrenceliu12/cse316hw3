@@ -18,6 +18,9 @@ export const GlobalStoreActionType = {
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
+    SET_LIST_NAME_DELETE_ACTIVE: "SET_LIST_NAME_DELETE_ACTIVE",
+    SET_LIST_NAME_DELETE_TO_FALSE: "SET_LIST_NAME_DELETE_TO_FALSE",
+    DELETE_CURRENT_LIST: "DELETE_CURRENT_LIST"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -102,6 +105,32 @@ export const useGlobalStore = () => {
                     listNameActive: true
                 });
             }
+            //START OF MY CASES
+            //START DELETING A LIST
+            case GlobalStoreActionType.SET_LIST_NAME_DELETE_ACTIVE: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter,
+                    listNameDeleteActive: true,
+                    deleteListID: payload
+                });
+            }
+            case GlobalStoreActionType.SET_LIST_NAME_DELETE_TO_FALSE: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter,
+                    listNameDeleteActive: false,
+                    deleteListID: payload
+                });
+            }
+            case GlobalStoreActionType.DELETE_CURRENT_LIST: {
+                return setStore({
+                    idNamePairs: payload,
+                    newListCounter: store.newListCounter - 1,
+                    listNameDeleteActive: false,
+                })
+            }
+            //END OF MY CASES
             default:
                 return store;
         }
@@ -222,6 +251,35 @@ export const useGlobalStore = () => {
             store.history.push('/playlist/' + response.data.playlist._id)
         }
         createPlaylist(playlist);
+    }
+
+    store.setIsListNameDeleteActive = function (id) {
+        storeReducer({
+            type: GlobalStoreActionType.SET_LIST_NAME_DELETE_ACTIVE,
+            payload: id
+        });
+    }
+
+    store.changeDeleteListState = function () {
+        storeReducer({
+            type: GlobalStoreActionType.SET_LIST_NAME_DELETE_TO_FALSE,
+            payload: null
+        });
+    }
+
+    store.deleteList = function () {
+        let id = store.deleteListID;
+        async function deletePlaylist(id) {
+            let response = await api.deleteList(id)
+            if (response.data.success){
+                let response = await api.getPlaylistPairs();
+                storeReducer({
+                    type: GlobalStoreActionType.DELETE_CURRENT_LIST,
+                    payload: response.data.idNamePairs
+                })
+            }
+        }
+        deletePlaylist(id);
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

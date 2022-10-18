@@ -123,10 +123,37 @@ updatePlaylistById = async (req, res) => {
     })
 }
 
+deletePlaylist = async (req, res) => {
+    let id = req.params.id;
+
+    if (!id){
+        return res.status(400).json({
+            success: false,
+            error: "You must provide an ID"
+        })
+    }
+
+    Playlist.deleteOne({_id: id}, (error, playlist) =>{
+        if (error){
+            return res.status(404).json({
+                error,
+                message: "Playlist cannot be found -- Delete",
+            })
+        }
+
+        return res.status(200).json({
+            success: true,
+            id: playlist._id,
+            message: "Playlist ID can be deleted"
+        })
+    })
+}
+
 module.exports = {
     createPlaylist,
     getPlaylists,
     getPlaylistPairs,
     getPlaylistById,
-    updatePlaylistById
+    updatePlaylistById,
+    deletePlaylist
 }

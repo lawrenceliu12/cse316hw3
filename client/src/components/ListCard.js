@@ -50,6 +50,20 @@ function ListCard(props) {
         setText(event.target.value );
     }
 
+    //START OF MY CODE
+    function handleToggleDelete(event){
+        event.stopPropagation();
+        toggleDelete();
+    }
+
+    function toggleDelete() {
+        let newActive = !store.listNameDeleteActive;
+        if (newActive) {
+            store.setIsListNameDeleteActive(idNamePair._id);
+        }
+    }
+    //END OF MY CODE
+
     let selectClass = "unselected-list-card";
     if (selected) {
         selectClass = "selected-list-card";
@@ -76,6 +90,7 @@ function ListCard(props) {
                 id={"delete-list-" + idNamePair._id}
                 className="list-card-button"
                 value={"\u2715"}
+                onClick = {handleToggleDelete}
             />
             <input
                 disabled={cardStatus}
