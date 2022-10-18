@@ -22,6 +22,9 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_DELETE_TO_FALSE: "SET_LIST_NAME_DELETE_TO_FALSE",
     DELETE_CURRENT_LIST: "DELETE_CURRENT_LIST",
     ADD_SONG: "ADD_SONG",
+    SET_SONG_NAME_DELETE_ACTIVE: "SET_SONG_NAME_DELETE_ACTIVE",
+    SET_SONG_NAME_DELETE_ACTIVE_TO_FALSE: "SET_SONG_NAME_DELETE_ACTIVE_TO_FALSE",
+    REMOVE_SONG: "REMOVE_SONG",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -132,6 +135,31 @@ export const useGlobalStore = () => {
                 })
             }
             case GlobalStoreActionType.ADD_SONG: {
+                return setStore({
+                    currentList: payload,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter
+                })
+            }
+            case GlobalStoreActionType.SET_SONG_NAME_DELETE_ACTIVE: {
+                return setStore({
+                    deleteSongID: payload,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    songNameDeleteActive: true,
+                })
+            }
+            case GlobalStoreActionType.SET_SONG_NAME_DELETE_ACTIVE_TO_FALSE: {
+                return setStore({
+                    deleteSongID: payload,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    songNameDeleteActive: false,
+                })
+            }
+            case GlobalStoreActionType.REMOVE_SONG: {
                 return setStore({
                     currentList: payload,
                     idNamePairs: store.idNamePairs,
@@ -299,7 +327,7 @@ export const useGlobalStore = () => {
 
         let id = store.currentList._id
 
-        async function asyncChangeListName(id) {
+        async function addSong(id) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
                 response.data.playlist.songs.push(newSong);
@@ -314,7 +342,43 @@ export const useGlobalStore = () => {
                 updateList(playlist);
             }
         }
-        asyncChangeListName(id);
+        addSong(id);
+    }
+
+    store.setIsSongNameDeleteActive = function (id) {
+        storeReducer({
+            type: GlobalStoreActionType.SET_SONG_NAME_DELETE_ACTIVE,
+            payload: id
+        });
+    }
+
+    store.changeDeleteSongState = function () {
+        storeReducer({
+            type: GlobalStoreActionType.SET_SONG_NAME_DELETE_ACTIVE_TO_FALSE,
+            payload: null
+        });
+    }
+
+    store.deleteSong = function () {
+        let songID = store.deleteSongID;
+        let playlistID = store.currentList._id;
+
+        async function removeSong(id) {
+            let response = await api.getPlaylistById(id);
+            if (response.data.success && songID >= 0) {
+                response.data.playlist.songs.splice(songID, 1);
+                let playlist = response.data.playlist;
+                async function updateList(playlist) {
+                    response = await api.updatePlaylistById(playlist._id, playlist);
+                    storeReducer({
+                        type: GlobalStoreActionType.REMOVE_SONG,
+                        payload: response.data.playlist
+                    })
+                }
+                updateList(playlist);
+            }
+        }
+        removeSong(playlistID);
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

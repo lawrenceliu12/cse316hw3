@@ -5,6 +5,21 @@ function SongCard(props) {
     const { store } = useContext(GlobalStoreContext);
 
     const { song, index } = props;
+
+    //START OF MY CODE
+    function handleDeleteSong(event){
+        event.stopPropagation();
+        toggleDelete();
+    }
+
+    function toggleDelete() {
+        let newActive = !store.songNameDeleteActive;
+        if (newActive) {
+            store.setIsSongNameDeleteActive(index);
+        }
+    }
+    //END OF MY CODE
+
     let cardClass = "list-card unselected-list-card";
     return (
         <div
@@ -24,6 +39,7 @@ function SongCard(props) {
                 id={"remove-song-" + index}
                 className="list-card-button"
                 value={"\u2715"}
+                onClick = {handleDeleteSong}
             />
         </div>
     );
