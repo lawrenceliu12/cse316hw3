@@ -110,7 +110,7 @@ updatePlaylistById = async (req, res) => {
         playlist.save().then(() => {
             return res.status(200).json({
                 success: true,
-                id: playlist._id,
+                playlist: playlist,
                 message: "Playlist has been updated"
             })
         })

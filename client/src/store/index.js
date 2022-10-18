@@ -20,7 +20,8 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     SET_LIST_NAME_DELETE_ACTIVE: "SET_LIST_NAME_DELETE_ACTIVE",
     SET_LIST_NAME_DELETE_TO_FALSE: "SET_LIST_NAME_DELETE_TO_FALSE",
-    DELETE_CURRENT_LIST: "DELETE_CURRENT_LIST"
+    DELETE_CURRENT_LIST: "DELETE_CURRENT_LIST",
+    ADD_SONG: "ADD_SONG",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -128,6 +129,13 @@ export const useGlobalStore = () => {
                     idNamePairs: payload,
                     newListCounter: store.newListCounter - 1,
                     listNameDeleteActive: false,
+                })
+            }
+            case GlobalStoreActionType.ADD_SONG: {
+                return setStore({
+                    currentList: payload,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter
                 })
             }
             //END OF MY CASES
@@ -245,7 +253,7 @@ export const useGlobalStore = () => {
             if (response.data.success){
                 storeReducer({
                     type: GlobalStoreActionType.CREATE_NEW_LIST,
-                    payload: newPlaylist
+                    payload: response.data.playlist
                 })
             }
             store.history.push('/playlist/' + response.data.playlist._id)
@@ -280,6 +288,33 @@ export const useGlobalStore = () => {
             }
         }
         deletePlaylist(id);
+    }
+
+    store.addSong = function (){
+        let newSong = {
+            title: "Untitled",
+            artist: "Unknown",
+            youTubeId: "dQw4w9WgXcQ"
+        }
+
+        let id = store.currentList._id
+
+        async function asyncChangeListName(id) {
+            let response = await api.getPlaylistById(id);
+            if (response.data.success) {
+                response.data.playlist.songs.push(newSong);
+                let playlist = response.data.playlist;
+                async function updateList(playlist) {
+                    response = await api.updatePlaylistById(playlist._id, playlist);
+                    storeReducer({
+                        type: GlobalStoreActionType.ADD_SONG,
+                        payload: response.data.playlist
+                    })
+                }
+                updateList(playlist);
+            }
+        }
+        asyncChangeListName(id);
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
