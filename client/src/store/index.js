@@ -4,6 +4,7 @@ import api from '../api'
 //TRANSACTIONS
 import AddSongTransaction from '../Transactions/AddSongTransaction';
 import MoveSongTransaction from '../Transactions/MoveSongTransaction'
+import DeleteSongTransaction from '../Transactions/DeleteSongTransaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -35,6 +36,7 @@ export const GlobalStoreActionType = {
     DRAG_START: "DRAG_START",
     DROP: "DROP",
     REMOVE_SONG_WITH_INDEX: "REMOVE_SONG_WITH_INDEX",
+    ADD_SONG_WITH_WITH_INDEX: "ADD_SONG_WITH_WITH_INDEX",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -231,6 +233,13 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter
                 })
             }
+            case GlobalStoreActionType.ADD_SONG_WITH_WITH_INDEX: {
+                return setStore({
+                    currentList: payload,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter
+                })
+            }
             //END OF MY CASES
             default:
                 return store;
@@ -390,7 +399,7 @@ export const useGlobalStore = () => {
             youTubeId: "dQw4w9WgXcQ"
         }
 
-        let id = store.currentList._id
+        let id = store.currentList._id;
 
         async function addSong(id) {
             let response = await api.getPlaylistById(id);
@@ -408,6 +417,27 @@ export const useGlobalStore = () => {
             }
         }
         addSong(id);
+    }
+
+    store.addSongWithIndex = function (index, deletedSong){
+        let id = store.currentList._id;
+
+        async function addWithIndex (id){
+            let response = await api.getPlaylistById(id);
+            if (response.data.success){
+                response.data.playlist.songs.splice(index, 0, deletedSong);
+                let playlist = response.data.playlist;
+                async function updateList(playlist) {
+                    response = await api.updatePlaylistById(playlist._id, playlist);
+                    storeReducer({
+                        type: GlobalStoreActionType.ADD_SONG_WITH_WITH_INDEX,
+                        payload: response.data.playlist
+                    })
+                }
+                updateList(playlist);
+            }
+        }
+        addWithIndex(id);
     }
 
     store.setIsSongNameDeleteActive = function (id) {
@@ -567,6 +597,11 @@ export const useGlobalStore = () => {
             let transaction = new MoveSongTransaction(store, oldIndex, newIndex);
             tps.addTransaction(transaction);
         }
+    }
+
+    store.deleteSongTransaction = function(){
+        let transaction = new DeleteSongTransaction(store, store.deleteSongID);
+        tps.addTransaction(transaction);
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

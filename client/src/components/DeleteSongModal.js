@@ -30,7 +30,7 @@ function DeleteSongModal()
                             <input type = "button"
                                 id = "delete-song-confirm-button"
                                 class = "modal-button"
-                                onClick = {store.deleteSong}
+                                onClick = {store.deleteSongTransaction}
                                 value = "Confirm" />
                             <input type = "button"
                                 id = "delete-song-cancel-button"
