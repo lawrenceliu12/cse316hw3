@@ -29,6 +29,9 @@ export const GlobalStoreActionType = {
     SET_SONG_NAME_EDIT_ACTIVE_TO_FALSE: "SET_SONG_NAME_EDIT_ACTIVE_TO_FALSE",
     EDIT_SONG: "EDIT_SONG",
     OLD_EDIT_SONG: "OLD_EDIT_SONG",
+    DRAG_START: "DRAG_START",
+    DROP: "DROP",
+    FINISH_DRAG: "FINISH_DRAG",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -199,6 +202,28 @@ export const useGlobalStore = () => {
                 return setStore({
                     oldSong: payload,
                     currentList: store.currentList,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter
+                })
+            }
+            case GlobalStoreActionType.DRAG_START: {
+                return setStore({
+                    currentList: store.currentList,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter,
+                    dragIndex: payload
+                })
+            }
+            case GlobalStoreActionType.DROP: {
+                return setStore({
+                    currentList: payload,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter,
+                })
+            }
+            case GlobalStoreActionType.FINISH_DRAG: {
+                return setStore({
+                    currentList: payload,
                     idNamePairs: store.idNamePairs,
                     newListCounter: store.newListCounter
                 })
@@ -469,6 +494,41 @@ export const useGlobalStore = () => {
             }
         }
         editSong(playlistID);
+    }
+
+    store.handleDragStart = function (index){
+        storeReducer({
+            type: GlobalStoreActionType.DRAG_START,
+            payload: index
+        })
+    }
+
+    store.handleDrop = function (index){
+        let draggedSongIndex = store.dragIndex
+        let draggedSong = store.currentList.songs[draggedSongIndex]
+        let dropSong = store.currentList.songs[index]
+
+        let playlistID = store.currentList._id;
+
+        let temp = dropSong;
+        store.currentList.songs[index] = draggedSong;
+        store.currentList.songs[draggedSongIndex] = temp;
+
+        async function swapSongs(id){
+            let response = await api.getPlaylistById(id);
+            if (response.data.success) {
+                let playlist = response.data.playlist;
+                async function updateList(playlist) {
+                    response = await api.updatePlaylistById(playlist._id, playlist);
+                    storeReducer({
+                        type: GlobalStoreActionType.FINISH_DRAG,
+                        payload: response.data.playlist
+                    })
+                }
+                updateList(store.currentList);
+            }
+        }
+        swapSongs(playlistID);
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

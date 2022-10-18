@@ -30,6 +30,18 @@ function SongCard(props) {
             store.setIsSongNameEditActive(index, song);
         }
     }
+
+    function handleDragStart(){
+        store.handleDragStart(index);
+    }
+
+    function handleDragOver(event){
+        event.preventDefault();
+    }
+
+    function handleDrop(){
+        store.handleDrop(index);
+    }
     //END OF MY CODE
 
     let cardClass = "list-card unselected-list-card";
@@ -39,6 +51,10 @@ function SongCard(props) {
             id={'song-' + index + '-card'}
             className={cardClass}
             onDoubleClick = {handleEditSong}
+            draggable="true"
+            onDragStart={handleDragStart}
+            onDragOver = {handleDragOver}
+            onDrop={handleDrop}
         >
             {index + 1}.
             <a
