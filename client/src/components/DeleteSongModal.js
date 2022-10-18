@@ -13,7 +13,7 @@ function DeleteSongModal()
         if (store.currentList){
             let song = store.currentList.songs[store.deleteSongID];
             if (song){
-                title += song.title;
+                title = song.title;
             }
         }
         return (

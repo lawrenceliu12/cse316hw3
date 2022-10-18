@@ -136,6 +136,7 @@ deletePlaylist = async (req, res) => {
     Playlist.deleteOne({_id: id}, (error, playlist) =>{
         if (error){
             return res.status(404).json({
+                success: false,
                 error,
                 message: "Playlist cannot be found -- Delete",
             })

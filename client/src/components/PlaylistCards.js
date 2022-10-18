@@ -12,6 +12,10 @@ function PlaylistCards() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
 
+    if (!store.currentList){
+        store.history.replace('/');
+        return <div id="playlist-cards"/>
+    }
     return (
         <div id="playlist-cards">
         {

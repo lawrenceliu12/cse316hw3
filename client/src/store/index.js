@@ -300,6 +300,7 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         });
+        tps.clearAllTransactions();
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -462,7 +463,7 @@ export const useGlobalStore = () => {
     store.changeDeleteSongState = function () {
         storeReducer({
             type: GlobalStoreActionType.SET_SONG_NAME_DELETE_ACTIVE_TO_FALSE,
-            payload: null
+            payload: store.deleteSongID
         });
     }
 

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Tangerine');
+
 :root {
   /* 
         FIRST WE'LL DEFINE OUR SWATCHES, i.e. THE COMPLEMENTARY
@@ -54,6 +56,7 @@ body {
   border-style: solid;
   border-radius: 10px;
   height: 9%;
+  padding-left: 15px;
 }
 
 #edit-toolbar {
@@ -61,20 +64,24 @@ body {
   grid-row: 1 / 2;
   background-color: transparent;
   float:right;
+  display: flex;
+  flex-direction: row;
+  overflow: auto;
 }
 
 #playlist-selector, #playlist-cards {
   overflow: scroll;
   grid-column: 1 / 3;
   grid-row: 2 / 3;
-  display:grid;
-  background-color: var(--swatch-primary);
+  display:flex;
+  flex-direction: column;
+  background-color: var(--swatch-accent);
   height: 82%;
 }
 
 .playlister-button, .playlister-button-disabled {
-  font-size:36pt;
-  border-width: 0px;
+  font-size:42pt;
+  border-width: 1px;
   float:left;
   color: black;
   cursor: pointer;
@@ -103,6 +110,19 @@ body {
   justify-content: center;
   font-size: 36pt;
   height: 9%;
+}
+
+#playlist-selector-heading{
+  grid-column: 1 / 3;
+  grid-row: 1 / 2;
+  border-color: black;
+  border-width: 2px;
+  background-color: var(--swatch-primary);
+  font-size: 28pt;
+}
+
+#add-list-button {
+  font-size: 25pt;
 }
 
 #add-list-button {
@@ -351,7 +371,7 @@ input {
 }
 
 .modal-north {
-  font-size:32pt;
+  font-size:20pt;
   font-weight: bold;
   background-color: #669966;
   color:white;
@@ -447,7 +467,7 @@ span {
 }
 
 #edit-song-title, #edit-song-artist, #edit-song-link{
-  font-size: 30px;
+  font-size: 25px;
   padding: 3px;
 }
 
