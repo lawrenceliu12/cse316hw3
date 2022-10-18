@@ -1,5 +1,6 @@
 import './App.css';
-import { React } from 'react'
+import { React, useContext } from 'react'
+import { GlobalStoreContext } from './store'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { Banner, ListSelector, PlaylistCards, Statusbar, DeleteListModal, DeleteSongModal, EditSongModal } from './components'
 /*
@@ -8,6 +9,17 @@ import { Banner, ListSelector, PlaylistCards, Statusbar, DeleteListModal, Delete
     @author McKilla Gorilla
 */
 const App = () => {
+    const {store} = useContext(GlobalStoreContext);
+    let handleKeyDown = (event) => {
+        if (event.ctrlKey && event.code === 'KeyZ'){
+            store.undo();
+        }
+        if (event.ctrlKey && event.code === 'KeyY'){
+            store.redo();
+        }
+    }
+
+    document.onkeydown = handleKeyDown;
     return (
         <Router>
             <Banner />

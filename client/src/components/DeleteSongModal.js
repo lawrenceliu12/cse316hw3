@@ -9,6 +9,13 @@ function DeleteSongModal()
         if(store.songNameDeleteActive){
             name += " is-visible";
         }
+        let title = "";
+        if (store.currentList){
+            let song = store.currentList.songs[store.deleteSongID];
+            if (song){
+                title += song.title;
+            }
+        }
         return (
             <div
                 className = {name}
@@ -22,7 +29,7 @@ function DeleteSongModal()
 
                         <div class = "modal-center">
                             <div class = "modal-center-content">
-                                Are you sure you wish to permanently delete song from the playlist?
+                                Are you sure you wish to permanently delete <b>{title}</b> from the playlist?
                             </div>
                         </div>
                         
