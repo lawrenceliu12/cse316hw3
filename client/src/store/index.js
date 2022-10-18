@@ -25,6 +25,10 @@ export const GlobalStoreActionType = {
     SET_SONG_NAME_DELETE_ACTIVE: "SET_SONG_NAME_DELETE_ACTIVE",
     SET_SONG_NAME_DELETE_ACTIVE_TO_FALSE: "SET_SONG_NAME_DELETE_ACTIVE_TO_FALSE",
     REMOVE_SONG: "REMOVE_SONG",
+    SET_SONG_NAME_EDIT_ACTIVE: "SET_SONG_NAME_EDIT_ACTIVE",
+    SET_SONG_NAME_EDIT_ACTIVE_TO_FALSE: "SET_SONG_NAME_EDIT_ACTIVE_TO_FALSE",
+    EDIT_SONG: "EDIT_SONG",
+    OLD_EDIT_SONG: "OLD_EDIT_SONG",
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -162,6 +166,39 @@ export const useGlobalStore = () => {
             case GlobalStoreActionType.REMOVE_SONG: {
                 return setStore({
                     currentList: payload,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter
+                })
+            }
+            case GlobalStoreActionType.SET_SONG_NAME_EDIT_ACTIVE: {
+                return setStore({
+                    editSongID: payload,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    songNameEditActive: true,
+                })
+            }
+            case GlobalStoreActionType.SET_SONG_NAME_EDIT_ACTIVE_TO_FALSE: {
+                return setStore({
+                    editSongID: payload,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    songNameEditActive: false,
+                })
+            }
+            case GlobalStoreActionType.EDIT_SONG: {
+                return setStore({
+                    currentList: payload,
+                    idNamePairs: store.idNamePairs,
+                    newListCounter: store.newListCounter
+                })
+            }
+            case GlobalStoreActionType.OLD_EDIT_SONG: {
+                return setStore({
+                    oldSong: payload,
+                    currentList: store.currentList,
                     idNamePairs: store.idNamePairs,
                     newListCounter: store.newListCounter
                 })
@@ -379,6 +416,55 @@ export const useGlobalStore = () => {
             }
         }
         removeSong(playlistID);
+    }
+
+    store.setIsSongNameEditActive = function (id) {
+        storeReducer({
+            type: GlobalStoreActionType.SET_SONG_NAME_EDIT_ACTIVE,
+            payload: id
+        });
+    }
+
+    store.changeEditSongState = function() {
+        storeReducer({
+            type: GlobalStoreActionType.SET_SONG_NAME_EDIT_ACTIVE_TO_FALSE,
+            payload: null
+        });
+    }
+
+    store.editSong = function() {
+        let newTitle = document.getElementById("edit-song-title-input").value;
+        let newArtist = document.getElementById("edit-song-artist-input").value;
+        let newLink = document.getElementById("edit-song-link-input").value;
+
+        let editID = store.editSongID;
+        let playlistID = store.currentList._id;
+
+        async function editSong(id) {
+            let response = await api.getPlaylistById(id);
+            if (response.data.success) {
+                let oldSong = response.data.playlist.songs[editID];
+                storeReducer({
+                    type: GlobalStoreActionType.OLD_EDIT_SONG,
+                    payload: oldSong
+                })
+                response.data.playlist.songs[editID] = {
+                    title: newTitle,
+                    artist: newArtist,
+                    youTubeId: newLink
+                }
+                let playlist = response.data.playlist;
+                async function updateList(playlist) {
+                    response = await api.updatePlaylistById(playlist._id, playlist);
+                    storeReducer({
+                        type: GlobalStoreActionType.EDIT_SONG,
+                        payload: response.data.playlist
+                    })
+                }
+                updateList(playlist);
+            }
+        }
+        editSong(playlistID);
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

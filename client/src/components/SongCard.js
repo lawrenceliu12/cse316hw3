@@ -18,6 +18,18 @@ function SongCard(props) {
             store.setIsSongNameDeleteActive(index);
         }
     }
+
+    function handleEditSong(event){
+        event.stopPropagation();
+        toggleEdit();
+    }
+
+    function toggleEdit(){
+        let newActive = !store.songNameEditActive;
+        if (newActive){
+            store.setIsSongNameEditActive(index);
+        }
+    }
     //END OF MY CODE
 
     let cardClass = "list-card unselected-list-card";
@@ -26,6 +38,7 @@ function SongCard(props) {
             key={index}
             id={'song-' + index + '-card'}
             className={cardClass}
+            onDoubleClick = {handleEditSong}
         >
             {index + 1}.
             <a
