@@ -27,7 +27,7 @@ function SongCard(props) {
     function toggleEdit(){
         let newActive = !store.songNameEditActive;
         if (newActive){
-            store.setIsSongNameEditActive(index);
+            store.setIsSongNameEditActive(index, song);
         }
     }
     //END OF MY CODE

@@ -418,7 +418,11 @@ export const useGlobalStore = () => {
         removeSong(playlistID);
     }
 
-    store.setIsSongNameEditActive = function (id) {
+    store.setIsSongNameEditActive = function (id, song) {
+        document.getElementById("edit-song-title-input").value = song.title;
+        document.getElementById("edit-song-artist-input").value = song.artist;
+        document.getElementById("edit-song-link-input").value = song.youTubeId;
+
         storeReducer({
             type: GlobalStoreActionType.SET_SONG_NAME_EDIT_ACTIVE,
             payload: id
