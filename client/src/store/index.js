@@ -5,6 +5,7 @@ import api from '../api'
 import AddSongTransaction from '../Transactions/AddSongTransaction';
 import MoveSongTransaction from '../Transactions/MoveSongTransaction'
 import DeleteSongTransaction from '../Transactions/DeleteSongTransaction';
+import EditSongTransaction from '../Transactions/EditSongTransaction';
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -515,12 +516,7 @@ export const useGlobalStore = () => {
         });
     }
 
-    store.editSong = function() {
-        let newTitle = document.getElementById("edit-song-title-input").value;
-        let newArtist = document.getElementById("edit-song-artist-input").value;
-        let newLink = document.getElementById("edit-song-link-input").value;
-
-        let editID = store.editSongID;
+    store.editSong = function(editID, newTitle, newArtist, newLink) {
         let playlistID = store.currentList._id;
 
         async function editSong(id) {
@@ -601,6 +597,15 @@ export const useGlobalStore = () => {
 
     store.deleteSongTransaction = function(){
         let transaction = new DeleteSongTransaction(store, store.deleteSongID);
+        tps.addTransaction(transaction);
+    }
+
+    store.editSongTransaction = function(){
+        let newTitle = document.getElementById("edit-song-title-input").value;
+        let newArtist = document.getElementById("edit-song-artist-input").value;
+        let newLink = document.getElementById("edit-song-link-input").value;
+
+        let transaction = new EditSongTransaction(store, store.editSongID, newTitle, newArtist, newLink, store.currentList.songs[store.editSongID]);
         tps.addTransaction(transaction);
     }
 

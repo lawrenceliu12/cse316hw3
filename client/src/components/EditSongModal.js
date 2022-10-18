@@ -44,7 +44,7 @@ function EditSongModal(){
                         <input type="button" 
                             id="edit-song-confirm-button" 
                             class="modal-button" 
-                            onClick={store.editSong}
+                            onClick={store.editSongTransaction}
                             value='Confirm' />
                         <input type="button" 
                             id="edit-song-cancel-button" 

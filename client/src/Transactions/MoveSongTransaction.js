@@ -1,6 +1,6 @@
 import { jsTPS_Transaction } from "../common/jsTPS";
 
-export default class AddSongTransaction extends jsTPS_Transaction{
+export default class MoveSongTransaction extends jsTPS_Transaction{
     constructor (initStore, oldIndex, newIndex){
         super();
         this.store = initStore;
