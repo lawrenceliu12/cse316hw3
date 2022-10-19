@@ -77,6 +77,7 @@ body {
   flex-direction: column;
   background-color: var(--swatch-accent);
   height: 82%;
+  width: 100%;
 }
 
 .playlister-button, .playlister-button-disabled {
@@ -123,9 +124,6 @@ body {
 
 #add-list-button {
   font-size: 25pt;
-}
-
-#add-list-button {
   float:left;
 }
 
@@ -367,7 +365,7 @@ input {
 }
 
 .modal-root > * {
-  padding: 1rem;
+  padding: 0.5rem;
 }
 
 .modal-north {
@@ -382,7 +380,7 @@ input {
   grid-template-columns: 30% 65%;
   grid-template-rows: 33% 33% 33%;
   gap: 10px 20px;
-  font-size: 48pt;
+  font-size: 25pt;
 }
 
 span {
@@ -413,7 +411,7 @@ span {
 }
 
 .modal-button {
-  font-size: 20pt;
+  font-size: 15pt;
 }
 
 #title-prompt {

@@ -67,9 +67,13 @@ getPlaylistPairs = async (req, res) => {
             return res.status(400).json({ success: false, error: err})
         }
         if (!playlists.length) {
-            return res
-                .status(404)
-                .json({ success: false, error: 'Playlists not found'})
+            // return res
+            //     .status(404)
+            //     .json({ success: false, error: 'Playlists not found'})
+            return res.status(200).json({
+                success: true,
+                idNamePairs: []
+            })
         }
         else {
             // PUT ALL THE LISTS INTO ID, NAME PAIRS
@@ -105,7 +109,9 @@ updatePlaylistById = async (req, res) => {
             })
         }
 
-        playlist.name = body.name
+        if (body.name){
+            playlist.name = body.name;
+        }
         playlist.songs = body.songs
         playlist.save().then(() => {
             return res.status(200).json({
@@ -115,6 +121,7 @@ updatePlaylistById = async (req, res) => {
             })
         })
         .catch(e => {
+            console.log('hey')
             return res.status(404).json({
                 e,
                 message: "Playlist cannot be updated"

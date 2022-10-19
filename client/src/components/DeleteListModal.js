@@ -4,15 +4,18 @@ import { useContext, useState } from 'react'
 
 function DeleteListModal() 
 {
-        // const { listKeyPair, deleteListCallback, hideDeleteListModalCallback } = this.props;
-        // let name = "";
-        // if (listKeyPair) {
-        //     name = listKeyPair.name;
-        // }
         const { store } = useContext(GlobalStoreContext);
         let name = "modal";
         if(store.listNameDeleteActive){
             name += " is-visible";
+        }
+        let title = "";
+        if (store.idNamePairs){
+            for (let i = 0; i < store.idNamePairs.length; i++){
+                if (store.idNamePairs[i]._id === store.deleteListID){
+                    title += store.idNamePairs[i].name;
+                }
+            }
         }
         return (
             <div 
@@ -25,7 +28,7 @@ function DeleteListModal()
                         </div>
                         <div class="modal-center">
                             <div class="modal-center-content">
-                                Are you sure you wish to permanently delete the playlist?
+                                Are you sure you wish to permanently delete <b>{title}</b>?
                             </div>
                         </div>
                         <div class="modal-south">

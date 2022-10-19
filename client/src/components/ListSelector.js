@@ -28,6 +28,12 @@ const ListSelector = () => {
             />
         ))
     }
+
+    let button = "playlister-button";
+    if (store.listNameActive || store.listNameDeleteActive){
+        button += "-disabled"
+    }
+
     return (
         <div id="playlist-selector">
             <div id="list-selector-list">
@@ -36,8 +42,9 @@ const ListSelector = () => {
                     type="button"
                     id="add-list-button"
                     onClick={handleCreateNewList}
-                    className="playlister-button"
-                    value="+" />
+                    className={button}
+                    value="+"
+                    disabled = {store.listNameActive || store.listNameDeleteActive} />
                 Your Lists
             </div>                {
                     listCard

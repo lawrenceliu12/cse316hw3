@@ -145,9 +145,9 @@ export const useGlobalStore = () => {
             }
             case GlobalStoreActionType.DELETE_CURRENT_LIST: {
                 return setStore({
+                    listNameDeleteActive: false,
                     idNamePairs: payload,
                     newListCounter: store.newListCounter - 1,
-                    listNameDeleteActive: false,
                 })
             }
             case GlobalStoreActionType.ADD_SONG: {
@@ -280,7 +280,6 @@ export const useGlobalStore = () => {
                                     type: GlobalStoreActionType.CHANGE_LIST_NAME,
                                     payload: {
                                         idNamePairs: pairsArray,
-                                        playlist: playlist
                                     }
                                 });
                             }
@@ -386,7 +385,7 @@ export const useGlobalStore = () => {
     store.changeDeleteListState = function () {
         storeReducer({
             type: GlobalStoreActionType.SET_LIST_NAME_DELETE_TO_FALSE,
-            payload: null
+            payload: store.deleteListID
         });
     }
 
